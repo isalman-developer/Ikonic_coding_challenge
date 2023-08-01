@@ -41,4 +41,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function sentConnectionRequests()
+    {
+        return $this->hasMany(ConnectionRequest::class, 'sender_id');
+    }
+
+    public function receivedConnectionRequests()
+    {
+        return $this->hasMany(ConnectionRequest::class, 'receiver_id');
+    }
+
+    public function connections()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connected_user_id');
+    }
 }

@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::create('connection_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sender_id')->comment('Sender User')->constrained('users', 'id')
-            ->onDelete('cascade');
+                ->onDelete('cascade');
             $table->foreignId('receiver_id')->comment('Receiver User')->constrained('users', 'id')
-            ->onDelete('cascade');
+                ->onDelete('cascade');
             $table->boolean('is_accepted')->default(false)
-            ->comment('Status Column');
+                ->comment('0 = false, 1 = accept');
             $table->timestamps();
         });
     }

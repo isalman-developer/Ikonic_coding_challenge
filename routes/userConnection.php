@@ -15,11 +15,11 @@ Route::middleware(['auth'])->group(function () {
     // individual routes
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     // resource routes
-    Route::resource('suggestions', SuggestionController::class);
+    Route::resource('connections', ConnectionController::class);
     Route::resource('connection-requests', ConnectionRequestController::class);
+    Route::resource('suggestions', SuggestionController::class);
     Route::resource('sent-connections', SentConnectionController::class);
     Route::resource('received-connections', ReceivedConnectionController::class);
-    Route::resource('connections', ConnectionController::class);
 
 
     // Route for sending a connection request

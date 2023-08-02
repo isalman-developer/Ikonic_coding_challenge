@@ -35,38 +35,38 @@
                     {{-- Display data here --}}
                 </div>
 
-                <span class="fw-bold">Suggestions</span>
-                <div id="suggestions_div">
-                    @forelse ($suggestions as $suggestion)
+                <span class="fw-bold">Send Connection</span>
+                <div id="sent_requests_div">
+                    @forelse ($sentRequests as $sentRequest)
                         <div class="my-2 shadow  text-white bg-dark p-1">
                             <div class="d-flex justify-content-between">
                                 <table class="ms-1">
-                                    <td class="align-middle">{{ $suggestion->name ?? 'N/A' }}</td>
+                                    <td class="align-middle">{{ $sentRequest->receiver->name ?? 'N/A' }}</td>
                                     <td class="align-middle"> - </td>
-                                    <td class="align-middle">{{ $suggestion->email ?? 'N/A' }}</td>
+                                    <td class="align-middle">{{ $sentRequest->receiver->email ?? 'N/A' }}</td>
                                     <td class="align-middle">
                                 </table>
                                 <div>
-                                    <button onclick="addConnection('{{ $suggestion->id }}');"
-                                        id="create_request_btn_suggestion" class="btn btn-primary me-1">
-                                        Connect
+                                    <button onclick="withDrawConnection('{{ $sentRequest->id }}');"
+                                        id="withdraw_btn_sent_requests" class="btn btn-danger">
+                                        Withdraw Request
                                     </button>
                                 </div>
                             </div>
                         </div>
                     @empty
-                        <p>No Suggestions Found.</p>
+                        <p>No Sent Requests Found.</p>
                     @endforelse
                 </div>
 
-                @if ($suggestions->currentPage() != $suggestions->lastPage())
-                    <div id="suggestion_skeleton" class="d-none">
+                @if ($sentRequests->currentPage() != $sentRequests->lastPage())
+                    <div id="sent_requests_skeleton" class="d-none">
                         @for ($i = 0; $i < 10; $i++)
                             <x-skeleton />
                         @endfor
                     </div>
 
-                    <x-load_more type="suggestions" />
+                    <x-load_more type="sent_requests" />
                 @endif
 
             </div>
@@ -76,20 +76,21 @@
 @push('scripts')
     <script>
         // function to send request for adding connection
-        function addConnection(userId) {
-            var requestUrl = '{{ route('connection-requests.store') }}';
+        function withDrawConnection(id) {
+            var requestUrl = "{{ route('connection-requests.destroy', ':id') }}";
+	        requestUrl = requestUrl.replace(':id', id);
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             // AJAX request to send the connection request using connects url
             $.ajax({
                 url: requestUrl,
-                type: 'POST',
+                type: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
                 },
                 dataType: 'json',
                 data: {
-                    "id": userId
+                    "id": id
                 },
                 success: function(response) {
                     // on success reload the page
@@ -101,32 +102,31 @@
             });
         }
 
-        // load more suggestions data ajax call
+        // load more sent_requests data ajax call
         var page_no = 1;
         var flag = true;
-        var type = "suggestions";
+        var type = "sent_requests";
 
         function loadMore() {
 
             if (flag) {
-                $("#suggestion_skeleton").removeClass('d-none');
+                $("#sent_requests_skeleton").removeClass('d-none');
                 $.ajax({
-                    url: "{{ route('suggestions.index') }}",
+                    url: "{{ route('sent-connections.index') }}",
                     type: 'GET',
                     data: {
                         "page": page_no + 1,
                     },
                     success: function(res) {
-                        $("#suggestion_skeleton").addClass('d-none');
-
+                        $("#sent_requests_skeleton").addClass('d-none');
+                        console.log(res);
                         var e = '';
                         if (res.data.length) {
                             $.each(res.data, function(key, val) {
-                                e = e +
-                                    `<div class="my-2 shadow  text-white bg-dark p-1"><div class="d-flex justify-content-between"><table class="ms-1"><td class="align-middle"> ${val.name}  </td><td class="align-middle"> - </td><td class="align-middle"> ${val.email} </td><td class="align-middle"></div> </table><div><button onclick=addConnection(${val.id}) id="create_request_btn_" class="btn btn-primary me-1">Connect</button></div></div></div>`;
+                                e = e + `<div class="my-2 shadow  text-white bg-dark p-1"> <div id="${type}+'_'+${val.id}" class="d-flex justify-content-between"><table class="ms-1"><td class="align-middle">${val.receiver.name}</td><td class="align-middle"> - </td><td class="align-middle">${val.receiver.email}</td><td class="align-middle"></div> </table><div><button id="cancel_request_btn_" class="btn btn-danger me-1" onclick=withDrawConnection(${val.id})>Withdraw Request</button></div></div></div>`;
                             });
                         }
-                        $('#suggestions_div').append(e);
+                        $('#sent_requests_div').append(e);
                         page_no = page_no + 1;
                         if (res.last_page == page_no) {
                             flag = false;
@@ -134,7 +134,7 @@
                         }
                     },
                     error: function(textStatus, errorThrown) {
-                        $("#suggestion_skeleton").addClass('d-none');
+                        $("#sent_requests_skeleton").addClass('d-none');
                     }
                 });
             }

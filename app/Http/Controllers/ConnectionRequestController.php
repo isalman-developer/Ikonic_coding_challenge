@@ -112,6 +112,14 @@ class ConnectionRequestController extends Controller
      */
     public function destroy(ConnectionRequest $connectionRequest)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $connectionRequest->delete();
+            return response()->json(['success' => true, 'message' => 'Request deleted successfully.']);
+            DB::commit();
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+            DB::rollBack();
+        }
     }
 }

@@ -18,22 +18,13 @@ class SuggestionController extends Controller
         $user = auth()->user();
         $type = 'suggestions';
 
-        $suggestions = User::whereDoesntHave('connections')
-            ->whereDoesntHave('sentRequests', function ($query) use ($user) {
-                $query->where('receiver_id', $user->id);
-            })
-            ->whereDoesntHave('receivedRequests', function ($query) use ($user) {
-                $query->where('sender_id', $user->id);
-            })
-            ->where('id', '!=', $user->id);
-
+        $suggestions = $user->suggestions();
         $suggestionsCount = $suggestions->count();
         $sentRequestsCount = auth()->user()->sentRequests->count();
         $receivedRequestsCount = auth()->user()->receivedRequests->count();;
         $connectionsCount = auth()->user()->connections->count();
         $suggestions = $suggestions->paginate(10);
         if(request()->ajax()){
-            info($suggestions);
             return $suggestions;
         }
 

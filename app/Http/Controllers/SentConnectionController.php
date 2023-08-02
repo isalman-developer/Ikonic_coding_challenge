@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ConnectionRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SentConnectionController extends Controller
@@ -13,7 +15,30 @@ class SentConnectionController extends Controller
      */
     public function index()
     {
-        //
+        $user = auth()->user();
+        $type = 'sent';
+
+        // function defined inside the user model for return the suggestion query
+        $suggestionsCount = $user->suggestions()->count();
+
+        $sentRequests = ConnectionRequest::whereSenderId($user->id)->with('receiver');
+        $sentRequestsCount = $sentRequests->count();
+        $receivedRequestsCount = auth()->user()->receivedRequests->count();;
+        $connectionsCount = auth()->user()->connections->count();
+        $sentRequests = $sentRequests->paginate(10);
+
+        if(request()->ajax()){
+            return $sentRequests;
+        }
+
+        return view('home', compact(
+            'type',
+            'sentRequests',
+            'sentRequestsCount',
+            'suggestionsCount',
+            'receivedRequestsCount',
+            'connectionsCount'
+        ));
     }
 
     /**

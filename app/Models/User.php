@@ -44,7 +44,8 @@ class User extends Authenticatable
     // User has many connection requests where they are the sender.
     public function sentRequests()
     {
-        return $this->hasMany(ConnectionRequest::class, 'sender_id', 'id');
+        // request which are sent and not accepted yet
+        return $this->hasMany(ConnectionRequest::class, 'sender_id', 'id')->where('is_accepted', false);
     }
 
     // User has many connection requests where they are the receiver.
@@ -64,5 +65,18 @@ class User extends Authenticatable
         return $this->connections()->whereHas('connections', function ($query) use ($user) {
             $query->where('connected_user_id', $user->id);
         });
+    }
+
+    public function suggestions()
+    {
+        $user = $this;
+        return $user->whereDoesntHave('connections')
+            ->whereDoesntHave('sentRequests', function ($query) use ($user) {
+                $query->where('receiver_id', $user->id);
+            })
+            ->whereDoesntHave('receivedRequests', function ($query) use ($user) {
+                $query->where('sender_id', $user->id);
+            })
+            ->where('id', '!=', $user->id);
     }
 }

@@ -8,17 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Connection extends Model
 {
     use HasFactory;
-    protected $fillable = ['sender_id', 'receiver_id'];
+    protected $fillable = ['user_id', 'connected_user_id'];
 
-    // sender user
-    public function sender()
+    // sender user's connections, connection sent by a user
+    public function user()
     {
-        return $this->belongsTo(User::class, 'sender_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    //receiver user
-    public function connection()
+    // Connection belongs to a connected user (receiver).
+    public function connectedUser()
     {
-        return $this->belongsTo(User::class, 'receiver_id');
+        return $this->belongsTo(User::class, 'connected_user_id');
     }
 }

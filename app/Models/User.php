@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -42,18 +41,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function sentConnectionRequests()
+    // User has many connection requests where they are the sender.
+    public function sentRequests()
     {
-        return $this->hasMany(ConnectionRequest::class, 'sender_id');
+        return $this->hasMany(ConnectionRequest::class, 'sender_id', 'id');
     }
 
-    public function receivedConnectionRequests()
+    // User has many connection requests where they are the receiver.
+    public function receivedRequests()
     {
-        return $this->hasMany(ConnectionRequest::class, 'receiver_id');
+        return $this->hasMany(ConnectionRequest::class, 'receiver_id', 'id');
     }
 
+    // User has many connections (a many-to-many relationship with the User model).
     public function connections()
     {
         return $this->belongsToMany(User::class, 'connections', 'user_id', 'connected_user_id');
+    }
+
+    public function commonConnections(User $user)
+    {
+        return $this->connections()->whereHas('connections', function ($query) use ($user) {
+            $query->where('connected_user_id', $user->id);
+        });
     }
 }

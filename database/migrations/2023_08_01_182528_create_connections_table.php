@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('connections', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sender_id')->comment('Sender User ID')->constrained('users', 'id')
+            $table->foreignId('user_id')->comment('Sender User ID')->constrained('users', 'id')
             ->onDelete('cascade');
-            $table->foreignId('receiver_id')->comment('Reciver User ID')->constrained('users', 'id')
+            $table->foreignId('connected_user_id')->comment('Reciver User ID')->constrained('users', 'id')
             ->onDelete('cascade');
             $table->timestamps();
         });

@@ -116,8 +116,8 @@ class ConnectionRequestController extends Controller
 
             $connectionRequest->delete();
             DB::commit();
-
             return response()->json(['success' => true, 'message' => 'Request deleted successfully.']);
+
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
             DB::rollBack();

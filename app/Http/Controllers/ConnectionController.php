@@ -17,32 +17,34 @@ class ConnectionController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $type = 'received_requests';
+        $type = 'connections';
 
         // function defined inside the user model for return the suggestion query
         $suggestionsCount = $user->suggestions()->count();
 
-        $receivedRequestsCount = $user->sentRequests->count();
+        $receivedRequestsCount = $user->receivedRequests->count();
 
-        $sentRequestsCount = $user->sentRequests->count();;
+        $sentRequestsCount = $user->sentRequests->count();
 
-        $connections = Connection::whereUserId($user->id);
+        $connections = Connection::query()->where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)->orWhere('connected_user_id', $user->id);
+        })->with('connectedUser','user');
 
         $connectionsCount = $connections->count();
 
-        $connectionsCount = $user->connections->count();
+        $connections = $connections->paginate(10);
 
-        if(request()->ajax()){
-            return $receivedRequests;
+        if (request()->ajax()) {
+            return $connections;
         }
 
         return view('home', compact(
             'type',
-            'receivedRequests',
-            'sentRequestsCount',
-            'suggestionsCount',
             'connections',
-            'connectionsCount'
+            'connectionsCount',
+            'receivedRequestsCount',
+            'sentRequestsCount',
+            'suggestionsCount'
         ));
     }
 
@@ -126,6 +128,16 @@ class ConnectionController extends Controller
      */
     public function destroy(Connection $connection)
     {
-        //
+        DB::beginTransaction();
+        try {
+
+            $connection->delete();
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Connection deleted successfully.']);
+
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+            DB::rollBack();
+        }
     }
 }

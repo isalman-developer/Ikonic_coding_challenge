@@ -38,7 +38,7 @@
                 <span class="fw-bold">Received Requests </span>
                 <div id="received_requests_div">
                     @forelse ($receivedRequests as $receivedRequest)
-                        <div class="my-2 shadow  text-white bg-dark p-1">
+                        <div class="my-2 shadow text-white bg-dark p-1">
                             <div class="d-flex justify-content-between">
                                 <table class="ms-1">
                                     <td class="align-middle">{{ $receivedRequest->sender->name ?? 'N/A' }}</td>
@@ -118,7 +118,6 @@
                     },
                     success: function(response) {
                         $("#received_requests_skeleton").addClass('d-none');
-                        console.log(response);
                         var element = '';
                         if (response.data.length) {
                             $.each(response.data, function(key, val) {

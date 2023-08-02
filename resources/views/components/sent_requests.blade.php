@@ -119,7 +119,6 @@
                     },
                     success: function(res) {
                         $("#sent_requests_skeleton").addClass('d-none');
-                        console.log(res);
                         var e = '';
                         if (res.data.length) {
                             $.each(res.data, function(key, val) {

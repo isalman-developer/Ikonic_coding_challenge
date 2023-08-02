@@ -10,15 +10,43 @@
         <x-dashboard />
 
         @if ($type == 'suggestions')
-            <x-suggestion :suggestions="$suggestions" :sentRequestsCount="$sentRequestsCount" :receivedRequestsCount="$receivedRequestsCount" :connectionsCount="$connectionsCount" :suggestionsCount="$suggestionsCount"/>
+            <x-suggestion
+            :suggestions="$suggestions"
+            :suggestionsCount="$suggestionsCount"
+            :sentRequestsCount="$sentRequestsCount"
+            :receivedRequestsCount="$receivedRequestsCount"
+            :connectionsCount="$connectionsCount"
+            />
         @endif
 
         @if ($type == 'sent_requests')
-            <x-sent_requests :sentRequests="$sentRequests" :sentRequestsCount="$sentRequestsCount" :suggestionsCount="$suggestionsCount" :receivedRequestsCount="$receivedRequestsCount" :connectionsCount="$connectionsCount" :suggestionsCount="$suggestionsCount"/>
+            <x-sent_requests
+            :suggestionsCount="$suggestionsCount"
+            :sentRequests="$sentRequests"
+            :sentRequestsCount="$sentRequestsCount"
+            :receivedRequestsCount="$receivedRequestsCount"
+            :connectionsCount="$connectionsCount"
+            />
         @endif
 
         @if ($type == 'received_requests')
-            <x-received_requests :receivedRequests="$receivedRequests" :receivedRequestsCount="$receivedRequestsCount" :sentRequestsCount="$sentRequestsCount" :suggestionsCount="$suggestionsCount"  :connectionsCount="$connectionsCount" :suggestionsCount="$suggestionsCount"/>
+            <x-received_requests
+            :suggestionsCount="$suggestionsCount"
+            :sentRequestsCount="$sentRequestsCount"
+            :receivedRequests="$receivedRequests"
+            :receivedRequestsCount="$receivedRequestsCount"
+            :connectionsCount="$connectionsCount"
+            />
+        @endif
+
+        @if ($type == 'connections')
+            <x-connection
+            :suggestionsCount="$suggestionsCount"
+            :sentRequestsCount="$sentRequestsCount"
+            :receivedRequestsCount="$receivedRequestsCount"
+            :connections="$connections"
+            :connectionsCount="$connectionsCount"
+            />
         @endif
 
     </div>

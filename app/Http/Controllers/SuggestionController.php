@@ -20,9 +20,9 @@ class SuggestionController extends Controller
 
         $suggestions = $user->suggestions();
         $suggestionsCount = $suggestions->count();
-        $sentRequestsCount = auth()->user()->sentRequests->count();
-        $receivedRequestsCount = auth()->user()->receivedRequests->count();;
-        $connectionsCount = auth()->user()->connections->count();
+        $sentRequestsCount = $user->sentRequests->count();
+        $receivedRequestsCount = $user->receivedRequests()->where('is_accepted', false)->count();;
+        $connectionsCount = $user->connections->count();
         $suggestions = $suggestions->paginate(10);
         if(request()->ajax()){
             return $suggestions;

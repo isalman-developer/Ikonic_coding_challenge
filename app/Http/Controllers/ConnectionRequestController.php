@@ -62,8 +62,8 @@ class ConnectionRequestController extends Controller
             $request->receiver()->associate($receiver);
             $request->save();
 
-            return response()->json(['success' => true, 'message' => 'Request sent successfully.']);
             DB::commit();
+            return response()->json(['success' => true, 'message' => 'Request sent successfully.']);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
             DB::rollBack();
@@ -101,7 +101,6 @@ class ConnectionRequestController extends Controller
      */
     public function update(Request $request, ConnectionRequest $connectionRequest)
     {
-        //
     }
 
     /**
@@ -114,9 +113,11 @@ class ConnectionRequestController extends Controller
     {
         DB::beginTransaction();
         try {
+
             $connectionRequest->delete();
-            return response()->json(['success' => true, 'message' => 'Request deleted successfully.']);
             DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Request deleted successfully.']);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
             DB::rollBack();

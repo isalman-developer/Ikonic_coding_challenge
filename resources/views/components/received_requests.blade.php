@@ -12,13 +12,13 @@
                     </a>
 
                     <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
-                        @checked(request()->routeIs('sent-connections.*'))>
-                    <a href="{{ route('sent-connections.index') }}" class="btn btn-outline-primary" for="btnradio2"
+                        @checked(request()->routeIs('sent-requests.*'))>
+                    <a href="{{ route('sent-requests.index') }}" class="btn btn-outline-primary" for="btnradio2"
                         id="get_sent_requests_btn">Sent Requests ({{ $sentRequestsCount }})</a>
 
                     <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off"
-                        @checked(request()->routeIs('received-connections.*'))>
-                    <a href="{{ route('received-connections.index') }}" class="btn btn-outline-primary" for="btnradio3"
+                        @checked(request()->routeIs('received-requests.*'))>
+                    <a href="{{ route('received-requests.index') }}" class="btn btn-outline-primary" for="btnradio3"
                         id="get_received_requests_btn">
                         Received Requests({{ $receivedRequestsCount }})
                     </a>
@@ -35,21 +35,21 @@
                     {{-- Display data here --}}
                 </div>
 
-                <span class="fw-bold">Send Connection</span>
-                <div id="sent_requests_div">
-                    @forelse ($sentRequests as $sentRequest)
+                <span class="fw-bold">Received Requests </span>
+                <div id="received_requests_div">
+                    @forelse ($receivedRequests as $receivedRequest)
                         <div class="my-2 shadow  text-white bg-dark p-1">
                             <div class="d-flex justify-content-between">
                                 <table class="ms-1">
-                                    <td class="align-middle">{{ $sentRequest->receiver->name ?? 'N/A' }}</td>
+                                    <td class="align-middle">{{ $receivedRequest->sender->name ?? 'N/A' }}</td>
                                     <td class="align-middle"> - </td>
-                                    <td class="align-middle">{{ $sentRequest->receiver->email ?? 'N/A' }}</td>
+                                    <td class="align-middle">{{ $receivedRequest->sender->email ?? 'N/A' }}</td>
                                     <td class="align-middle">
                                 </table>
                                 <div>
-                                    <button onclick="withDrawConnection('{{ $sentRequest->id }}');"
-                                        id="withdraw_btn_sent_requests" class="btn btn-danger">
-                                        Withdraw Request
+                                    <button onclick="acceptReceivedRequest('{{ $receivedRequest->id }}');"
+                                        id="withdraw_btn_received_requests" class="btn btn-primary">
+                                        Accept
                                     </button>
                                 </div>
                             </div>
@@ -59,14 +59,14 @@
                     @endforelse
                 </div>
 
-                @if ($sentRequests->currentPage() != $sentRequests->lastPage())
-                    <div id="sent_requests_skeleton" class="d-none">
+                @if ($receivedRequests->currentPage() != $receivedRequests->lastPage())
+                    <div id="received_requests_skeleton" class="d-none">
                         @for ($i = 0; $i < 10; $i++)
                             <x-skeleton />
                         @endfor
                     </div>
 
-                    <x-load_more type="sent_requests" />
+                    <x-load_more type="received_requests" />
                 @endif
 
             </div>
@@ -76,15 +76,14 @@
 @push('scripts')
     <script>
         // function to send request for adding connection
-        function withDrawConnection(id) {
-            var requestUrl = "{{ route('connection-requests.destroy', ':id') }}";
-	        requestUrl = requestUrl.replace(':id', id);
+        function acceptReceivedRequest(id) {
+            var requestUrl = "{{ route('connections.store') }}";
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             // AJAX request to send the connection request using connects url
             $.ajax({
                 url: requestUrl,
-                type: 'DELETE',
+                type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
                 },
@@ -102,39 +101,57 @@
             });
         }
 
-        // load more sent_requests data ajax call
+        // load more received_requests data ajax call
         var page_no = 1;
         var flag = true;
-        var type = "sent_requests";
+        var type = "received_requests";
 
         function loadMore() {
 
             if (flag) {
-                $("#sent_requests_skeleton").removeClass('d-none');
+                $("#received_requests_skeleton").removeClass('d-none');
                 $.ajax({
-                    url: "{{ route('sent-connections.index') }}",
+                    url: "{{ route('received-requests.index') }}",
                     type: 'GET',
                     data: {
                         "page": page_no + 1,
                     },
-                    success: function(res) {
-                        $("#sent_requests_skeleton").addClass('d-none');
-                        console.log(res);
-                        var e = '';
-                        if (res.data.length) {
-                            $.each(res.data, function(key, val) {
-                                e = e + `<div class="my-2 shadow  text-white bg-dark p-1"> <div id="${type}+'_'+${val.id}" class="d-flex justify-content-between"><table class="ms-1"><td class="align-middle">${val.receiver.name}</td><td class="align-middle"> - </td><td class="align-middle">${val.receiver.email}</td><td class="align-middle"></div> </table><div><button id="cancel_request_btn_" class="btn btn-danger me-1" onclick=withDrawConnection(${val.id})>Withdraw Request</button></div></div></div>`;
+                    success: function(response) {
+                        $("#received_requests_skeleton").addClass('d-none');
+                        console.log(response);
+                        var element = '';
+                        if (response.data.length) {
+                            $.each(response.data, function(key, val) {
+
+                                element = element + `<div class="my-2 shadow text-white bg-dark p-1">
+                                            <div class="d-flex justify-content-between">
+                                                <table class="ms-1">
+                                                    <td class="align-middle">${val.sender.name}</td>
+                                                    <td class="align-middle"> - </td>
+                                                    <td class="align-middle">${val.sender.email}</td>
+                                                    <td class="align-middle">
+                                                </table>
+                                                <div>
+                                                    <button onclick="acceptReceivedRequest(${val.id});"
+                                                        id="withdraw_btn_received_requests" class="btn btn-primary">
+                                                        Accept
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>`;
                             });
                         }
-                        $('#sent_requests_div').append(e);
+                        $('#received_requests_div').append(element);
+
                         page_no = page_no + 1;
-                        if (res.last_page == page_no) {
+
+                        if (response.last_page == page_no) {
                             flag = false;
                             $('#load_more_btn_parent_' + type).addClass('d-none');
                         }
                     },
                     error: function(textStatus, errorThrown) {
-                        $("#sent_requests_skeleton").addClass('d-none');
+                        $("#received_requests_skeleton").addClass('d-none');
                     }
                 });
             }

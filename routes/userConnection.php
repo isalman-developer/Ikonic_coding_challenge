@@ -4,10 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\SuggestionController;
-use App\Http\Controllers\SentConnectionController;
 use App\Http\Controllers\ConnectionRequestController;
-use App\Http\Controllers\ReceivedConnectionController;
-
+use App\Http\Controllers\ReceivedRequestController;
+use App\Http\Controllers\SentRequestController;
 
 // Define the routes for user connections
 Route::middleware(['auth'])->group(function () {
@@ -18,8 +17,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('connections', ConnectionController::class);
     Route::resource('connection-requests', ConnectionRequestController::class);
     Route::resource('suggestions', SuggestionController::class);
-    Route::resource('sent-connections', SentConnectionController::class);
-    Route::resource('received-connections', ReceivedConnectionController::class);
+    Route::resource('sent-requests', SentRequestController::class);
+    Route::resource('received-requests', ReceivedRequestController::class);
 
 
     // Route for sending a connection request
@@ -27,16 +26,16 @@ Route::middleware(['auth'])->group(function () {
         ->name('send-request');
 
     // Route for displaying sent requests
-    Route::get('/sent-requests', [App\Http\Controllers\HomeController::class, 'sentRequests'])
-        ->name('sent-requests');
+    // Route::get('/sent-requests', [App\Http\Controllers\HomeController::class, 'sentRequests'])
+    //     ->name('sent-requests');
 
     // Route for withdrawing a connection request
     Route::post('/withdraw-request/{requestId}', [App\Http\Controllers\HomeController::class, 'withdrawRequest'])
         ->name('withdraw-request');
 
     // Route for displaying received requests
-    Route::get('/received-requests', [App\Http\Controllers\HomeController::class, 'receivedRequests'])
-        ->name('received-requests');
+    // Route::get('/received-requests', [App\Http\Controllers\HomeController::class, 'receivedRequests'])
+    //     ->name('received-requests');
 
     // Route for accepting a connection request
     Route::post('/accept-request/{requestId}', [App\Http\Controllers\HomeController::class, 'acceptRequest'])

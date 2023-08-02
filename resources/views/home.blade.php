@@ -13,8 +13,12 @@
             <x-suggestion :suggestions="$suggestions" :sentRequestsCount="$sentRequestsCount" :receivedRequestsCount="$receivedRequestsCount" :connectionsCount="$connectionsCount" :suggestionsCount="$suggestionsCount"/>
         @endif
 
-        @if ($type == 'sent')
-            <x-sent_connections :sentRequests="$sentRequests" :sentRequestsCount="$sentRequestsCount" :suggestionsCount="$suggestionsCount" :receivedRequestsCount="$receivedRequestsCount" :connectionsCount="$connectionsCount" :suggestionsCount="$suggestionsCount"/>
+        @if ($type == 'sent_requests')
+            <x-sent_requests :sentRequests="$sentRequests" :sentRequestsCount="$sentRequestsCount" :suggestionsCount="$suggestionsCount" :receivedRequestsCount="$receivedRequestsCount" :connectionsCount="$connectionsCount" :suggestionsCount="$suggestionsCount"/>
+        @endif
+
+        @if ($type == 'received_requests')
+            <x-received_requests :receivedRequests="$receivedRequests" :receivedRequestsCount="$receivedRequestsCount" :sentRequestsCount="$sentRequestsCount" :suggestionsCount="$suggestionsCount"  :connectionsCount="$connectionsCount" :suggestionsCount="$suggestionsCount"/>
         @endif
 
     </div>

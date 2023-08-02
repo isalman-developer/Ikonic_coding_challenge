@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Connection;
+use App\Models\ConnectionRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConnectionController extends Controller
 {
@@ -14,7 +16,34 @@ class ConnectionController extends Controller
      */
     public function index()
     {
-        //
+        $user = auth()->user();
+        $type = 'received_requests';
+
+        // function defined inside the user model for return the suggestion query
+        $suggestionsCount = $user->suggestions()->count();
+
+        $receivedRequestsCount = $user->sentRequests->count();
+
+        $sentRequestsCount = $user->sentRequests->count();;
+
+        $connections = Connection::whereUserId($user->id);
+
+        $connectionsCount = $connections->count();
+
+        $connectionsCount = $user->connections->count();
+
+        if(request()->ajax()){
+            return $receivedRequests;
+        }
+
+        return view('home', compact(
+            'type',
+            'receivedRequests',
+            'sentRequestsCount',
+            'suggestionsCount',
+            'connections',
+            'connectionsCount'
+        ));
     }
 
     /**
@@ -35,7 +64,24 @@ class ConnectionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $request = ConnectionRequest::findOrFail($request->input('id'));
+
+            // Create a new connection between sender and receiver
+            $connection = new Connection();
+            $connection->user()->associate($request->receiver);
+            $connection->connectedUser()->associate($request->sender);
+            $connection->save();
+
+            // Delete the request after it's accepted
+            $request->delete();
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Request deleted successfully.']);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+            DB::rollback();
+        }
     }
 
     /**

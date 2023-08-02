@@ -6,7 +6,7 @@ use App\Models\ConnectionRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class SentConnectionController extends Controller
+class SentRequestController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,15 +16,19 @@ class SentConnectionController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $type = 'sent';
+        $type = 'sent_requests';
 
         // function defined inside the user model for return the suggestion query
         $suggestionsCount = $user->suggestions()->count();
 
-        $sentRequests = ConnectionRequest::whereSenderId($user->id)->with('receiver');
+        $sentRequests = ConnectionRequest::whereSenderId($user->id)->where(['is_accepted' => false])->with('receiver');
+
         $sentRequestsCount = $sentRequests->count();
-        $receivedRequestsCount = auth()->user()->receivedRequests->count();;
-        $connectionsCount = auth()->user()->connections->count();
+
+        $receivedRequestsCount = $user->receivedRequests()->where('is_accepted', false)->count();;
+
+        $connectionsCount = $user->connections->count();
+
         $sentRequests = $sentRequests->paginate(10);
 
         if(request()->ajax()){

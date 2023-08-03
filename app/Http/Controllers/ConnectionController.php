@@ -96,7 +96,6 @@ class ConnectionController extends Controller
 
             // Find the intersection of connectedUserIds and connected_ids to get common connection IDs. So taking only the ids that matches with the collection of the connected ids of the currently logged in user and the collection of the connected ids of $connection.
             $commonConnectionIds = array_intersect($connectedUserIds, $connected_ids);
-
             // Get the users with the common connection IDs (excluding the currently logged-in user) and paginate the result.
             $connection->commonConnections = User::whereIn('id', $commonConnectionIds)->where('id', '!=', $user->id)->paginate(10);
         }

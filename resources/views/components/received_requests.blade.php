@@ -55,7 +55,7 @@
                             </div>
                         </div>
                     @empty
-                        <p>No Sent Requests Found.</p>
+                        <p>No Received Requests Found.</p>
                     @endforelse
                 </div>
 

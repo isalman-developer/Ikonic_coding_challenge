@@ -43,7 +43,6 @@ class UsersSeeder extends Seeder
                     ConnectionRequest::create([
                         'sender_id' => $user->id,
                         'receiver_id' => $randomUser->id,
-                        'is_accepted' => false,
                     ]);
                 }
             }

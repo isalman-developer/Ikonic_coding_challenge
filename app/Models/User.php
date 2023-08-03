@@ -45,13 +45,13 @@ class User extends Authenticatable
     public function sentRequests()
     {
         // request which are sent and not accepted yet
-        return $this->hasMany(ConnectionRequest::class, 'sender_id', 'id')->where('is_accepted', false);
+        return $this->hasMany(ConnectionRequest::class, 'sender_id', 'id');
     }
 
     // User has many connection requests where they are the receiver.
     public function receivedRequests()
     {
-        return $this->hasMany(ConnectionRequest::class, 'receiver_id', 'id')->where('is_accepted', false);
+        return $this->hasMany(ConnectionRequest::class, 'receiver_id', 'id');
     }
 
     // User has many connections (a many-to-many relationship with the User model).

@@ -19,8 +19,6 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->foreignId('receiver_id')->comment('Receiver User')->constrained('users', 'id')
                 ->onDelete('cascade');
-            $table->boolean('is_accepted')->default(false)
-                ->comment('0 = false, 1 = accept');
             $table->timestamps();
         });
     }

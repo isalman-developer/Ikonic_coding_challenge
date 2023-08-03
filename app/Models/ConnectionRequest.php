@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ConnectionRequest extends Model
 {
     use HasFactory;
-    protected $fillable = ['sender_id', 'receiver_id', 'is_accepted'];
+    protected $fillable = ['sender_id', 'receiver_id'];
 
     // Connection request belongs to a sender (user).
     public function sender()

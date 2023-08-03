@@ -13,7 +13,7 @@
                 <span class="fw-bold">Received Requests </span>
                 <div id="received_requests_div">
                     @forelse ($receivedRequests as $receivedRequest)
-                        <div class="my-2 shadow text-white bg-dark p-1">
+                        <div class="my-2 shadow text-white bg-dark p-1" id="received_request_div{{ $receivedRequest->id }}">
                             <div class="d-flex justify-content-between">
                                 {{-- table component showing name and email --}}
                                 <x-table :name="$receivedRequest->sender->name" :email="$receivedRequest->sender->email" />
@@ -63,8 +63,7 @@
                     "id": id
                 },
                 success: function(response) {
-                    // on success reload the page
-                    window.location.reload();
+                    $(`#received_request_div${id}`).remove();
                 },
                 error: function(error) {
                     console.error('Error:', error);
@@ -93,7 +92,7 @@
                         if (response.data.length) {
                             // iterating over data and assigning it to the div
                             $.each(response.data, function(key, val) {
-                                element = element + `<div class="my-2 shadow text-white bg-dark p-1">
+                                element = element + `<div class="my-2 shadow text-white bg-dark p-1" id="received_request_div${val.id}">
                                             <div class="d-flex justify-content-between">
                                                 <table class="ms-1">
                                                     <td class="align-middle">${val.sender.name}</td>

@@ -14,7 +14,7 @@
                 <span class="fw-bold">Suggestions</span>
                 <div id="suggestions_div">
                     @forelse ($suggestions as $suggestion)
-                        <div class="my-2 shadow  text-white bg-dark p-1">
+                        <div class="my-2 shadow text-white bg-dark p-1" id="suggestion_div_{{ $suggestion->id }}">
                             <div class="d-flex justify-content-between">
                                 {{-- table component showing name and email --}}
                                 <x-table :name="$suggestion->name" :email="$suggestion->email" />
@@ -64,8 +64,7 @@
                     "id": userId
                 },
                 success: function(response) {
-                    // on success reload the page
-                    window.location.reload();
+                    $(`#suggestion_div_${userId}`).remove();
                 },
                 error: function(error) {
                     console.error('Error:', error);
@@ -96,7 +95,7 @@
 
                             $.each(res.data, function(key, val) {
                                 e = e +
-                                    `<div class="my-2 shadow  text-white bg-dark p-1"><div class="d-flex justify-content-between"><table class="ms-1"><td class="align-middle"> ${val.name}  </td><td class="align-middle"> - </td><td class="align-middle"> ${val.email} </td><td class="align-middle"></div> </table><div><button onclick=addConnection(${val.id}) id="create_request_btn_" class="btn btn-primary me-1">Connect</button></div></div></div>`;
+                                    `<div class="my-2 shadow text-white bg-dark p-1" id="suggestion_div_${val.id}"><div class="d-flex justify-content-between"><table class="ms-1"><td class="align-middle"> ${val.name}  </td><td class="align-middle"> - </td><td class="align-middle"> ${val.email} </td><td class="align-middle"></div> </table><div><button onclick=addConnection(${val.id}) id="create_request_btn_" class="btn btn-primary me-1">Connect</button></div></div></div>`;
                             });
                         }
                         $('#suggestions_div').append(e);

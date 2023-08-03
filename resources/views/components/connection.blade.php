@@ -14,7 +14,7 @@
                     @forelse ($connections as $connection)
                     @if (auth()->user()->id != $connection->user_id)
                     {{-- if currenty logged-in user is receiver means the request is sent by other user then show the name and eail of the sender  --}}
-                            <div class="my-2 shadow text-white bg-dark p-1">
+                            <div class="my-2 shadow text-white bg-dark p-1" id="connection_div{{ $connection->id }}">
                                 <div class="d-flex justify-content-between">
 
                                     <x-table :name="$connection->user->name" :email="$connection->user->email" />
@@ -23,7 +23,8 @@
                                         <button style="width: 220px" id="get_connections_in_common_connetctions"
                                             class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#collapse_{{ $connection->id }}" aria-expanded="false"
-                                            aria-controls="collapseExample">
+                                            aria-controls="collapseExample"
+                                            @disabled($connection->commonConnections->total() <= 0)>
                                             Connections in common ({{ $connection->commonConnections->total() }})
                                         </button>
 
@@ -65,7 +66,7 @@
                             </div>
                         @else
                         {{-- if the logged-in user is sender then show the name and email of the receiver user --}}
-                            <div class="my-2 shadow text-white bg-dark p-1">
+                            <div class="my-2 shadow text-white bg-dark p-1" id="connection_div{{ $connection->id }}">
                                 <div class="d-flex justify-content-between">
 
                                     <x-table :name="$connection->connectedUser->name" :email="$connection->connectedUser->email" />
@@ -75,6 +76,7 @@
                                             class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#collapse_{{ $connection->id }}" aria-expanded="false"
                                             aria-controls="collapseExample"
+                                            @disabled($connection->commonConnections->total() <= 0)
                                             >
                                             Connections in common ({{ $connection->commonConnections->total() }})
                                         </button>
@@ -155,7 +157,7 @@
                     "id": id
                 },
                 success: function(response) {
-                    window.location.reload();
+                    $(`#connection_div${id}`).remove();
                 },
                 error: function(error) {
                     console.error('Error:', error);
@@ -186,7 +188,7 @@
                             $.each(response.data, function(key, val) {
                                 if ("{{ auth()->user()->id }}" != val.connected_user.id) {
                                     element = element + `
-                                        <div class="my-2 shadow text-white bg-dark p-1">
+                                        <div class="my-2 shadow text-white bg-dark p-1" id="connection_div${val.id}">
                                             <div class="d-flex justify-content-between">
                                                 <table class="ms-1">
                                                     <td class="align-middle">${val.connected_user.name}</td>
@@ -198,7 +200,8 @@
                                                     <button style="width: 220px" id="get_connections_in_common_connetctions"
                                                         class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                                         data-bs-target="#collapse_${val.id}" aria-expanded="false"
-                                                        aria-controls="collapseExample">
+                                                        aria-controls="collapseExample"
+                                                        ${val.commonConnections.data.length <= 0 ? 'disabled' : ''}>
                                                         Connections in common (${val.commonConnections.data.length})
                                                     </button>
                                                     <button id="create_request_btn_"
@@ -210,7 +213,7 @@
                                         </div>`
                                 } else {
                                     element = element + `
-                                        <div class="my-2 shadow text-white bg-dark p-1">
+                                        <div class="my-2 shadow text-white bg-dark p-1" id="connection_div${val.id}">
                                             <div class="d-flex justify-content-between">
                                                 <table class="ms-1">
                                                     <td class="align-middle">${val.user.name}</td>
@@ -222,7 +225,8 @@
                                                     <button style="width: 220px" id="get_connections_in_common_connetctions"
                                                         class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                                         data-bs-target="#collapse_${val.id}" aria-expanded="false"
-                                                        aria-controls="collapseExample">
+                                                        aria-controls="collapseExample"
+                                                        ${val.commonConnections.data.length <= 0 ? 'disabled' : ''}>
                                                         Connections in common (${val.commonConnections.data.length})
                                                     </button>
                                                     <button id="create_request_btn_"

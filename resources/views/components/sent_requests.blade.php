@@ -14,7 +14,7 @@
                 <span class="fw-bold">Sent Requests</span>
                 <div id="sent_requests_div">
                     @forelse ($sentRequests as $sentRequest)
-                        <div class="my-2 shadow text-white bg-dark p-1">
+                        <div class="my-2 shadow text-white bg-dark p-1" id="sent_request_div_{{ $sentRequest->id }}">
                             <div class="d-flex justify-content-between">
                                 {{-- table component showing name and email --}}
                                 <x-table :name="$sentRequest->receiver->name" :email="$sentRequest->receiver->email" />
@@ -65,8 +65,8 @@
                     "id": id
                 },
                 success: function(response) {
-                    // on success reload the page
-                    window.location.reload();
+                    $(`#sent_request_div_${id}`).remove();
+
                 },
                 error: function(error) {
                     console.error('Error:', error);
@@ -94,7 +94,7 @@
                         var e = '';
                         if (res.data.length) {
                             $.each(res.data, function(key, val) {
-                                e = e + `<div class="my-2 shadow  text-white bg-dark p-1"> <div id="${type}+'_'+${val.id}" class="d-flex justify-content-between"><table class="ms-1"><td class="align-middle">${val.receiver.name}</td><td class="align-middle"> - </td><td class="align-middle">${val.receiver.email}</td><td class="align-middle"></div> </table><div><button id="cancel_request_btn_" class="btn btn-danger me-1" onclick=withDrawConnection(${val.id})>Withdraw Request</button></div></div></div>`;
+                                e = e + `<div class="my-2 shadow text-white bg-dark p-1" id="sent_request_div_${val.id}"> <div id="${type}+'_'+${val.id}" class="d-flex justify-content-between"><table class="ms-1"><td class="align-middle">${val.receiver.name}</td><td class="align-middle"> - </td><td class="align-middle">${val.receiver.email}</td><td class="align-middle"></div> </table><div><button id="cancel_request_btn_" class="btn btn-danger me-1" onclick=withDrawConnection(${val.id})>Withdraw Request</button></div></div></div>`;
                             });
                         }
                         $('#sent_requests_div').append(e);

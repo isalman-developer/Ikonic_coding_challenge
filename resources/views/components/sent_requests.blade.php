@@ -3,33 +3,9 @@
         <div class="card shadow  text-white bg-dark">
             <div class="card-header">Coding Challenge - Network connections</div>
             <div class="card-body">
-                <div class="btn-group w-100 mb-3" role="group" aria-label="Basic radio toggle button group">
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off"
-                        @checked(request()->routeIs('connections.suggestions') || request()->routeIs('home.*'))>
-                    <a href="{{ route('connections.suggestions') }}" class="btn btn-outline-primary" for="btnradio1"
-                        id="get_suggestions_btn">
-                        Suggestions ({{ $suggestionsCount }})
-                    </a>
+                {{-- menu component to show tabs --}}
+                <x-menu :suggestionsCount="$suggestionsCount" :sentRequestsCount="$sentRequestsCount" :receivedRequestsCount="$receivedRequestsCount" :connectionsCount="$connectionsCount" />
 
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
-                        @checked(request()->routeIs('connections.sent.requests'))>
-                    <a href="{{ route('connections.sent.requests') }}" class="btn btn-outline-primary" for="btnradio2"
-                        id="get_sent_requests_btn">Sent Requests ({{ $sentRequestsCount }})</a>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off"
-                        @checked(request()->routeIs('connections.received.requests'))>
-                    <a href="{{ route('connections.received.requests') }}" class="btn btn-outline-primary" for="btnradio3"
-                        id="get_received_requests_btn">
-                        Received Requests({{ $receivedRequestsCount }})
-                    </a>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio4" autocomplete="off"
-                        @checked(request()->routeIs('connections'))>
-                    <a href="{{ route('connections.index') }}" class="btn btn-outline-primary" for="btnradio4"
-                        id="get_connections_btn">
-                        Connections ({{ $connectionsCount }})
-                    </a>
-                </div>
                 <hr>
                 <div id="content" class="d-none">
                     {{-- Display data here --}}
@@ -40,12 +16,8 @@
                     @forelse ($sentRequests as $sentRequest)
                         <div class="my-2 shadow text-white bg-dark p-1">
                             <div class="d-flex justify-content-between">
-                                <table class="ms-1">
-                                    <td class="align-middle">{{ $sentRequest->receiver->name ?? 'N/A' }}</td>
-                                    <td class="align-middle"> - </td>
-                                    <td class="align-middle">{{ $sentRequest->receiver->email ?? 'N/A' }}</td>
-                                    <td class="align-middle">
-                                </table>
+                                {{-- table component showing name and email --}}
+                                <x-table :name="$sentRequest->receiver->name" :email="$sentRequest->receiver->email" />
                                 <div>
                                     <button onclick="withDrawConnection({{ $sentRequest->id }});"
                                         id="withdraw_btn_sent_requests" class="btn btn-danger">

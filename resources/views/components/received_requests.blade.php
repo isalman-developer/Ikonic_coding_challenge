@@ -3,33 +3,8 @@
         <div class="card shadow  text-white bg-dark">
             <div class="card-header">Coding Challenge - Network connections</div>
             <div class="card-body">
-                <div class="btn-group w-100 mb-3" role="group" aria-label="Basic radio toggle button group">
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off"
-                        @checked(request()->routeIs('connections.suggestions') || request()->routeIs('home.*'))>
-                    <a href="{{ route('connections.suggestions') }}" class="btn btn-outline-primary" for="btnradio1"
-                        id="get_suggestions_btn">
-                        Suggestions ({{ $suggestionsCount }})
-                    </a>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
-                        @checked(request()->routeIs('connections.sent.requests'))>
-                    <a href="{{ route('connections.sent.requests') }}" class="btn btn-outline-primary" for="btnradio2"
-                        id="get_sent_requests_btn">Sent Requests ({{ $sentRequestsCount }})</a>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off"
-                        @checked(request()->routeIs('connections.received.requests'))>
-                    <a href="{{ route('connections.received.requests') }}" class="btn btn-outline-primary" for="btnradio3"
-                        id="get_received_requests_btn">
-                        Received Requests({{ $receivedRequestsCount }})
-                    </a>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio4" autocomplete="off"
-                        @checked(request()->routeIs('connections.index'))>
-                    <a href="{{ route('connections.index') }}" class="btn btn-outline-primary" for="btnradio4"
-                        id="get_connections_btn">
-                        Connections ({{ $connectionsCount }})
-                    </a>
-                </div>
+                {{-- menu component to show tabs --}}
+                <x-menu :suggestionsCount="$suggestionsCount" :sentRequestsCount="$sentRequestsCount" :receivedRequestsCount="$receivedRequestsCount" :connectionsCount="$connectionsCount" />
                 <hr>
                 <div id="content" class="d-none">
                     {{-- Display data here --}}
@@ -40,12 +15,8 @@
                     @forelse ($receivedRequests as $receivedRequest)
                         <div class="my-2 shadow text-white bg-dark p-1">
                             <div class="d-flex justify-content-between">
-                                <table class="ms-1">
-                                    <td class="align-middle">{{ $receivedRequest->sender->name ?? 'N/A' }}</td>
-                                    <td class="align-middle"> - </td>
-                                    <td class="align-middle">{{ $receivedRequest->sender->email ?? 'N/A' }}</td>
-                                    <td class="align-middle">
-                                </table>
+                                {{-- table component showing name and email --}}
+                                <x-table :name="$receivedRequest->sender->name" :email="$receivedRequest->sender->email" />
                                 <div>
                                     <button onclick="acceptReceivedRequest('{{ $receivedRequest->id }}');"
                                         id="withdraw_btn_received_requests" class="btn btn-primary">
@@ -75,12 +46,12 @@
 </div>
 @push('scripts')
     <script>
-        // function to send request for adding connection
+        // function to accept request for adding connection
         function acceptReceivedRequest(id) {
             var requestUrl = "{{ route('connections.store') }}";
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            // AJAX request to send the connection request using connects url
+            // AJAX request to accept the connection request using connects url
             $.ajax({
                 url: requestUrl,
                 type: 'POST',
@@ -101,7 +72,7 @@
             });
         }
 
-        // load more received_requests data ajax call
+        // load more received_requests connection by using ajax call
         var page_no = 1;
         var flag = true;
         var type = "received_requests";
@@ -120,8 +91,8 @@
                         $("#received_requests_skeleton").addClass('d-none');
                         var element = '';
                         if (response.data.length) {
+                            // iterating over data and assigning it to the div
                             $.each(response.data, function(key, val) {
-
                                 element = element + `<div class="my-2 shadow text-white bg-dark p-1">
                                             <div class="d-flex justify-content-between">
                                                 <table class="ms-1">
@@ -142,6 +113,7 @@
                         }
                         $('#received_requests_div').append(element);
 
+                        // checking page number and then disabled load more if its the last page
                         page_no = page_no + 1;
 
                         if (response.last_page == page_no) {

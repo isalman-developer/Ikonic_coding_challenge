@@ -3,33 +3,9 @@
         <div class="card shadow  text-white bg-dark">
             <div class="card-header">Coding Challenge - Network connections</div>
             <div class="card-body">
-                <div class="btn-group w-100 mb-3" role="group" aria-label="Basic radio toggle button group">
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off"
-                        @checked(request()->routeIs('connections.suggestions') || request()->routeIs('home.*'))>
-                    <a href="{{ route('connections.suggestions') }}" class="btn btn-outline-primary" for="btnradio1"
-                        id="get_suggestions_btn">
-                        Suggestions ({{ $suggestionsCount }})
-                    </a>
+                {{-- menu component to show tabs --}}
+                <x-menu :suggestionsCount="$suggestionsCount" :sentRequestsCount="$sentRequestsCount" :receivedRequestsCount="$receivedRequestsCount" :connectionsCount="$connectionsCount" />
 
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
-                        @checked(request()->routeIs('connections.sent.requests'))>
-                    <a href="{{ route('connections.sent.requests') }}" class="btn btn-outline-primary" for="btnradio2"
-                        id="get_sent_requests_btn">Sent Requests ({{ $sentRequestsCount }})</a>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off"
-                        @checked(request()->routeIs('connections.received.requests'))>
-                    <a href="{{ route('connections.received.requests') }}" class="btn btn-outline-primary" for="btnradio3"
-                        id="get_received_requests_btn">
-                        Received Requests({{ $receivedRequestsCount }})
-                    </a>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="btnradio4" autocomplete="off"
-                        @checked(request()->routeIs('connections'))>
-                    <a href="{{ route('connections.index') }}" class="btn btn-outline-primary" for="btnradio4"
-                        id="get_connections_btn">
-                        Connections ({{ $connectionsCount }})
-                    </a>
-                </div>
                 <hr>
                 <div id="content" class="d-none">
                     {{-- Display data here --}}
@@ -40,12 +16,8 @@
                     @forelse ($suggestions as $suggestion)
                         <div class="my-2 shadow  text-white bg-dark p-1">
                             <div class="d-flex justify-content-between">
-                                <table class="ms-1">
-                                    <td class="align-middle">{{ $suggestion->name ?? 'N/A' }}</td>
-                                    <td class="align-middle"> - </td>
-                                    <td class="align-middle">{{ $suggestion->email ?? 'N/A' }}</td>
-                                    <td class="align-middle">
-                                </table>
+                                {{-- table component showing name and email --}}
+                                <x-table :name="$suggestion->name" :email="$suggestion->email" />
                                 <div>
                                     <button onclick="addConnection({{ $suggestion->id }});"
                                         id="create_request_btn_suggestion" class="btn btn-primary me-1">
@@ -77,10 +49,10 @@
     <script>
         // function to send request for adding connection
         function addConnection(userId) {
-            var requestUrl = '{{ route('connection-requests.store') }}';
+            var requestUrl = "{{ route('connection-requests.store') }}";
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            // AJAX request to send the connection request using connects url
+            // AJAX request to send the connection request
             $.ajax({
                 url: requestUrl,
                 type: 'POST',
@@ -101,13 +73,12 @@
             });
         }
 
-        // load more suggestions data ajax call
+        // load more suggestions connection by using ajax call
         var page_no = 1;
         var flag = true;
         var type = "suggestions";
 
         function loadMore() {
-
             if (flag) {
                 $("#suggestion_skeleton").removeClass('d-none');
                 $.ajax({
@@ -121,12 +92,16 @@
 
                         var e = '';
                         if (res.data.length) {
+                            // iterating over data and assigning it to the div
+
                             $.each(res.data, function(key, val) {
                                 e = e +
                                     `<div class="my-2 shadow  text-white bg-dark p-1"><div class="d-flex justify-content-between"><table class="ms-1"><td class="align-middle"> ${val.name}  </td><td class="align-middle"> - </td><td class="align-middle"> ${val.email} </td><td class="align-middle"></div> </table><div><button onclick=addConnection(${val.id}) id="create_request_btn_" class="btn btn-primary me-1">Connect</button></div></div></div>`;
                             });
                         }
                         $('#suggestions_div').append(e);
+
+                        // checking page number and then disabled load more if its the last page
                         page_no = page_no + 1;
                         if (res.last_page == page_no) {
                             flag = false;

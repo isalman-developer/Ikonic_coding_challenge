@@ -16,24 +16,32 @@ class ConnectionsInCommonSeeder extends Seeder
      */
     public function run()
     {
+        // all users from the "users" table
         $users = User::all();
 
-        // Generate connections in common with users
-        foreach ($users as $user) {
-            // Get the connections of the user
-            $userConnections = $user->connections()->pluck('connected_user_id');
+        // creating connections between the first 25 users and the next 25 users
+        for ($i = 0; $i < 25; $i++) {
+            for ($j = 25; $j < 50; $j++) {
+                // dont create connections between the same user
+                if ($i != $j) {
+                    Connection::create([
+                        "user_id" => $users[$i]->id, //$i user is the send
+                        "connected_user_id" => $users[$j]->id //$j user is the receiver
+                    ]);
+                }
+            }
+        }
 
-            // Get the common connections of the user's connections
-            $commonConnections = $users->whereIn('id', $userConnections)
-                ->where('id', '!=', $user->id)
-                ->pluck('id');
-
-            // Create connections in common
-            foreach ($commonConnections as $commonConnection) {
-                Connection::create([
-                    'user_id' => $user->id,
-                    'connected_user_id' => $commonConnection,
-                ]);
+        // creating additional connections between 20 and 40 users and 40 to 50 users
+        for ($i = 20; $i <= 45; $i++) {
+            for ($j = 35; $j <= 50; $j++) {
+                // dont create connections between the same user
+                if ($i != $j) {
+                    Connection::create([
+                        "user_id" => $users[$i]->id, //$i user is the send
+                        "connected_user_id" => $users[$j]->id //$j user is the receiver
+                    ]);
+                }
             }
         }
     }
